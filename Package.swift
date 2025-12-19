@@ -6,6 +6,7 @@ import PackageDescription
 // - Default: fetch ActrFFI.xcframework from GitHub Release.
 // - Local override: set ACTR_BINARY_PATH to a local xcframework path when developing.
 let env = ProcessInfo.processInfo.environment
+let bindingsPath = env["ACTR_BINDINGS_PATH"] ?? "ActrBindings"
 let localBinaryPath = env["ACTR_BINARY_PATH"]
 
 let releaseTag = env["ACTR_BINARY_TAG"] ?? "v0.1.0"
@@ -42,14 +43,14 @@ let package = Package(
         actrBinaryTarget,
         .target(
             name: "actrFFI",
-            path: "ActrBindings",
+            path: bindingsPath,
             sources: ["actrFFI.c"],
             publicHeadersPath: "include"
         ),
         .target(
             name: "ActrSwift",
             dependencies: ["actrFFI", "ActrFFI"],
-            path: "ActrBindings",
+            path: bindingsPath,
             exclude: [
                 "include",
                 "actrFFI.c",

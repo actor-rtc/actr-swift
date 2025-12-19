@@ -17,9 +17,9 @@ CRATE_DIR="${ROOT_DIR}/libactr"
 CRATE_LIB_NAME="actr"
 FRAMEWORK_NAME="ActrFFI"
 
-BINDINGS_DIR="${ROOT_DIR}/ActrBindings"
+BINDINGS_DIR="${ACTR_BINDINGS_PATH:-${ROOT_DIR}/ActrBindings}"
 HEADERS_DIR="${BINDINGS_DIR}/include"
-XCFRAMEWORK_DIR="${ROOT_DIR}/${FRAMEWORK_NAME}.xcframework"
+XCFRAMEWORK_DIR="${ACTR_BINARY_PATH:-${ROOT_DIR}/${FRAMEWORK_NAME}.xcframework}"
 
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then

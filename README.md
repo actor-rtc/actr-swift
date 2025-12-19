@@ -25,6 +25,18 @@ Set an environment override to point the package at a locally built XCFramework:
 ACTR_BINARY_PATH=/absolute/path/to/ActrFFI.xcframework swift build
 ```
 
+To build fresh bindings/binaries without脏染 git 工作区，可将生成输出指向忽略目录：
+
+```bash
+ACTR_BINDINGS_PATH=dist/ActrBindings ACTR_BINARY_PATH=dist/ActrFFI.xcframework ./build-xcframework.sh
+```
+
+然后以同样的环境变量消费：
+
+```bash
+ACTR_BINDINGS_PATH=dist/ActrBindings ACTR_BINARY_PATH=dist/ActrFFI.xcframework swift build
+```
+
 ## Build (maintainers)
 
 Prerequisites:
