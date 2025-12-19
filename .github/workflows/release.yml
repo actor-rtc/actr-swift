@@ -1,0 +1,53 @@
+name: release-xcframework
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add Apple targets
+        run: |
+          rustup target add \
+            aarch64-apple-ios \
+            aarch64-apple-ios-sim \
+            x86_64-apple-ios \
+            aarch64-apple-darwin \
+            x86_64-apple-darwin
+
+      - name: Install UniFFI CLI
+        run: cargo install uniffi --features "cli" --locked
+
+      - name: Build XCFramework
+        run: ./build-xcframework.sh
+
+      - name: Package binary
+        run: ./scripts/package-binary.sh ${{ github.ref_name }}
+
+      - name: Publish release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: dist/ActrFFI.xcframework.zip
+          generate_release_notes: true
+
+      - name: Release summary
+        run: |
+          {
+            echo "## Release artifacts"
+            cat dist/release.txt
+          } >> "$GITHUB_STEP_SUMMARY"
