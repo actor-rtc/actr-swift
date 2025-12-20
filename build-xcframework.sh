@@ -36,7 +36,6 @@ require_file() {
 }
 
 require_cmd cargo
-require_cmd lipo
 require_cmd xcodebuild
 require_cmd uniffi-bindgen
 require_cmd rustc
@@ -68,7 +67,9 @@ fi
 rm -f \
   "${BINDINGS_DIR}/Actr.swift" \
   "${BINDINGS_DIR}/actrFFI.h" \
+  "${BINDINGS_DIR}/ActrFFI.h" \
   "${BINDINGS_DIR}/actrFFI.modulemap" \
+  "${BINDINGS_DIR}/ActrFFI.modulemap" \
   "${HEADERS_DIR}/actrFFI.h"
 
 echo "[2/4] Generating Swift bindings (host: ${HOST_TARGET})"
@@ -84,42 +85,62 @@ fi
 (cd "${CRATE_DIR}" && uniffi-bindgen generate --library "${DYLIB_PATH}" --language swift --out-dir "${BINDINGS_DIR}")
 
 require_file "${BINDINGS_DIR}/Actr.swift"
-require_file "${BINDINGS_DIR}/actrFFI.modulemap"
+MODULEMAP_FILE=$(find "${BINDINGS_DIR}" -maxdepth 1 -iname "actrFFI.modulemap" | head -n 1)
+require_file "${MODULEMAP_FILE}"
+
+# UniFFI's generated Swift bindings only attempt to import the binary target module (ActrFFI),
+# but the C declarations (RustBuffer, RustCallStatus, etc) live in the SwiftPM C target module
+# (`actrFFI`). Patch the generated file so it builds in SwiftPM/Xcode.
+if ! rg -q -F '#if canImport(actrFFI)' "${BINDINGS_DIR}/Actr.swift"; then
+  perl -0777pi -e 's|(#if canImport\(ActrFFI\)\nimport ActrFFI\n#endif)|#if canImport(actrFFI)\n    import actrFFI\n#endif\n$1|' "${BINDINGS_DIR}/Actr.swift"
+fi
+
+# Swift 6 strict concurrency can reject passing non-Sendable closures into Task. Patch the generated
+# helper to wrap captured closures in an @unchecked Sendable container.
+if ! rg -q "struct UniffiUnsafeSendable" "${BINDINGS_DIR}/Actr.swift"; then
+  perl -0777pi -e 's|(fileprivate func uniffiFutureContinuationCallback\\(handle: UInt64, pollResult: Int8\\) \\{[\\s\\S]*?\\})\\nprivate func uniffiTraitInterfaceCallAsync|$1\n\nprivate struct UniffiUnsafeSendable<T>: \@unchecked Sendable {\n    let value: T\n\n    init(_ value: T) {\n        self.value = value\n    }\n}\n\nprivate func uniffiTraitInterfaceCallAsync|' "${BINDINGS_DIR}/Actr.swift"
+
+  perl -0777pi -e 's|private func uniffiTraitInterfaceCallAsync<T>\\(\\n\\s*makeCall: \\@escaping \\(\\) async throws -> T,\\n\\s*handleSuccess: \\@escaping \\(T\\) -> \\(\\),\\n\\s*handleError: \\@escaping \\(Int8, RustBuffer\\) -> \\(\\),\\n\\s*droppedCallback: UnsafeMutablePointer<UniffiForeignFutureDroppedCallbackStruct>\\n\\) \\{\\n\\s*let task = Task \\{\\n\\s*do \\{\\n\\s*handleSuccess\\(try await makeCall\\(\\)\\)\\n\\s*\\} catch \\{\\n\\s*handleError\\(CALL_UNEXPECTED_ERROR, FfiConverterString\\.lower\\(String\\(describing: error\\)\\)\\)\\n\\s*\\}\\n\\s*\\}\\n|private func uniffiTraitInterfaceCallAsync<T>(\\n    makeCall: \\@escaping () async throws -> T,\\n    handleSuccess: \\@escaping (T) -> (),\\n    handleError: \\@escaping (Int8, RustBuffer) -> (),\\n    droppedCallback: UnsafeMutablePointer<UniffiForeignFutureDroppedCallbackStruct>\\n) {\\n    let makeCallSendable = UniffiUnsafeSendable(makeCall)\\n    let handleSuccessSendable = UniffiUnsafeSendable(handleSuccess)\\n    let handleErrorSendable = UniffiUnsafeSendable(handleError)\\n\\n    let task = Task {\\n        do {\\n            handleSuccessSendable.value(try await makeCallSendable.value())\\n        } catch {\\n            handleErrorSendable.value(\\n                CALL_UNEXPECTED_ERROR,\\n                FfiConverterString.lower(String(describing: error))\\n            )\\n        }\\n    }\\n|s' "${BINDINGS_DIR}/Actr.swift"
+
+  perl -0777pi -e 's|private func uniffiTraitInterfaceCallAsyncWithError<T, E>\\(\\n\\s*makeCall: \\@escaping \\(\\) async throws -> T,\\n\\s*handleSuccess: \\@escaping \\(T\\) -> \\(\\),\\n\\s*handleError: \\@escaping \\(Int8, RustBuffer\\) -> \\(\\),\\n\\s*lowerError: \\@escaping \\(E\\) -> RustBuffer,\\n\\s*droppedCallback: UnsafeMutablePointer<UniffiForeignFutureDroppedCallbackStruct>\\n\\) \\{\\n\\s*let task = Task \\{\\n\\s*do \\{\\n\\s*handleSuccess\\(try await makeCall\\(\\)\\)\\n\\s*\\} catch let error as E \\{\\n\\s*handleError\\(CALL_ERROR, lowerError\\(error\\)\\)\\n\\s*\\} catch \\{\\n\\s*handleError\\(CALL_UNEXPECTED_ERROR, FfiConverterString\\.lower\\(String\\(describing: error\\)\\)\\)\\n\\s*\\}\\n\\s*\\}\\n|private func uniffiTraitInterfaceCallAsyncWithError<T, E>(\\n    makeCall: \\@escaping () async throws -> T,\\n    handleSuccess: \\@escaping (T) -> (),\\n    handleError: \\@escaping (Int8, RustBuffer) -> (),\\n    lowerError: \\@escaping (E) -> RustBuffer,\\n    droppedCallback: UnsafeMutablePointer<UniffiForeignFutureDroppedCallbackStruct>\\n) {\\n    let makeCallSendable = UniffiUnsafeSendable(makeCall)\\n    let handleSuccessSendable = UniffiUnsafeSendable(handleSuccess)\\n    let handleErrorSendable = UniffiUnsafeSendable(handleError)\\n    let lowerErrorSendable = UniffiUnsafeSendable(lowerError)\\n\\n    let task = Task {\\n        do {\\n            handleSuccessSendable.value(try await makeCallSendable.value())\\n        } catch let error as E {\\n            handleErrorSendable.value(CALL_ERROR, lowerErrorSendable.value(error))\\n        } catch {\\n            handleErrorSendable.value(\\n                CALL_UNEXPECTED_ERROR,\\n                FfiConverterString.lower(String(describing: error))\\n            )\\n        }\\n    }\\n|s' "${BINDINGS_DIR}/Actr.swift"
+fi
+
+if ! rg -q -F '#if canImport(actrFFI)' "${BINDINGS_DIR}/Actr.swift"; then
+  echo "error: expected Actr.swift to include 'import actrFFI' patch" >&2
+  exit 1
+fi
+
+if ! rg -q "struct UniffiUnsafeSendable" "${BINDINGS_DIR}/Actr.swift"; then
+  echo "error: expected Actr.swift to include UniffiUnsafeSendable patch" >&2
+  exit 1
+fi
+
+if ! rg -q "makeCallSendable = UniffiUnsafeSendable\\(makeCall\\)" "${BINDINGS_DIR}/Actr.swift"; then
+  echo "error: expected Actr.swift to include Swift 6 concurrency patch" >&2
+  exit 1
+fi
 
 # UniFFI currently writes the header next to the modulemap; SwiftPM expects public headers under
 # `publicHeadersPath` (we use `ActrBindings/include`).
-if [[ -f "${BINDINGS_DIR}/actrFFI.h" ]]; then
-  mv -f "${BINDINGS_DIR}/actrFFI.h" "${HEADERS_DIR}/actrFFI.h"
+HEADER_FILE=$(find "${BINDINGS_DIR}" -maxdepth 1 -iname "actrFFI.h" | head -n 1)
+if [[ -n "${HEADER_FILE}" && -f "${HEADER_FILE}" ]]; then
+  mv -f "${HEADER_FILE}" "${HEADERS_DIR}/actrFFI.h"
 fi
 require_file "${HEADERS_DIR}/actrFFI.h"
 
 # Ensure the modulemap points at the header location used by SwiftPM.
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  sed -i '' 's|header "actrFFI.h"|header "include/actrFFI.h"|g' "${BINDINGS_DIR}/actrFFI.modulemap"
-else
-  sed -i 's|header "actrFFI.h"|header "include/actrFFI.h"|g' "${BINDINGS_DIR}/actrFFI.modulemap"
+if [[ -f "${MODULEMAP_FILE}" ]]; then
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' 's|header ".*"|header "include/actrFFI.h"|g' "${MODULEMAP_FILE}"
+  else
+    sed -i 's|header ".*"|header "include/actrFFI.h"|g' "${MODULEMAP_FILE}"
+  fi
 fi
 
-echo "[3/4] Building Rust static libraries (iOS + macOS)"
+echo "[3/4] Building Rust static libraries (iOS + macOS - ARM64 only)"
 (cd "${CRATE_DIR}" && cargo build --release --target aarch64-apple-ios)
 (cd "${CRATE_DIR}" && cargo build --release --target aarch64-apple-ios-sim)
-(cd "${CRATE_DIR}" && cargo build --release --target x86_64-apple-ios)
 (cd "${CRATE_DIR}" && cargo build --release --target aarch64-apple-darwin)
-(cd "${CRATE_DIR}" && cargo build --release --target x86_64-apple-darwin)
-
-IOS_SIM_UNIVERSAL_DIR="${CRATE_DIR}/target/ios-sim-universal/release"
-mkdir -p "${IOS_SIM_UNIVERSAL_DIR}"
-lipo -create \
-  "${CRATE_DIR}/target/aarch64-apple-ios-sim/release/lib${CRATE_LIB_NAME}.a" \
-  "${CRATE_DIR}/target/x86_64-apple-ios/release/lib${CRATE_LIB_NAME}.a" \
-  -output "${IOS_SIM_UNIVERSAL_DIR}/lib${CRATE_LIB_NAME}.a"
-
-MACOS_UNIVERSAL_DIR="${CRATE_DIR}/target/macos-universal/release"
-mkdir -p "${MACOS_UNIVERSAL_DIR}"
-lipo -create \
-  "${CRATE_DIR}/target/aarch64-apple-darwin/release/lib${CRATE_LIB_NAME}.a" \
-  "${CRATE_DIR}/target/x86_64-apple-darwin/release/lib${CRATE_LIB_NAME}.a" \
-  -output "${MACOS_UNIVERSAL_DIR}/lib${CRATE_LIB_NAME}.a"
 
 echo "[4/4] Creating XCFramework"
 rm -rf "${XCFRAMEWORK_DIR}"
@@ -127,9 +148,9 @@ rm -rf "${XCFRAMEWORK_DIR}"
 xcodebuild -create-xcframework \
   -library "${CRATE_DIR}/target/aarch64-apple-ios/release/lib${CRATE_LIB_NAME}.a" \
   -headers "${HEADERS_DIR}" \
-  -library "${IOS_SIM_UNIVERSAL_DIR}/lib${CRATE_LIB_NAME}.a" \
+  -library "${CRATE_DIR}/target/aarch64-apple-ios-sim/release/lib${CRATE_LIB_NAME}.a" \
   -headers "${HEADERS_DIR}" \
-  -library "${MACOS_UNIVERSAL_DIR}/lib${CRATE_LIB_NAME}.a" \
+  -library "${CRATE_DIR}/target/aarch64-apple-darwin/release/lib${CRATE_LIB_NAME}.a" \
   -headers "${HEADERS_DIR}" \
   -output "${XCFRAMEWORK_DIR}"
 

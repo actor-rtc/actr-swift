@@ -243,26 +243,33 @@ typedef void (*UniffiForeignFutureCompleteVoid)(uint64_t, UniffiForeignFutureRes
     );
 
 #endif
-#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_CALLBACK_METHOD0
-#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_CALLBACK_METHOD0
-typedef void (*UniffiCallbackInterfaceWorkloadCallbackMethod0)(uint64_t, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
+#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD0
+#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD0
+typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod0)(uint64_t, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
     );
 
 #endif
-#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_CALLBACK_METHOD1
-#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_CALLBACK_METHOD1
-typedef void (*UniffiCallbackInterfaceWorkloadCallbackMethod1)(uint64_t, RustBuffer, RustBuffer, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
+#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD1
+#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD1
+typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod1)(uint64_t, uint64_t, UniffiForeignFutureCompleteVoid _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
     );
 
 #endif
-#ifndef UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_WORKLOAD_CALLBACK
-#define UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_WORKLOAD_CALLBACK
-typedef struct UniffiVTableCallbackInterfaceWorkloadCallback {
+#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD2
+#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD2
+typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod2)(uint64_t, uint64_t, UniffiForeignFutureCompleteVoid _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
+    );
+
+#endif
+#ifndef UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_WORKLOAD_BRIDGE
+#define UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_WORKLOAD_BRIDGE
+typedef struct UniffiVTableCallbackInterfaceWorkloadBridge {
     UniffiCallbackInterfaceFree _Nonnull uniffiFree;
     UniffiCallbackInterfaceClone _Nonnull uniffiClone;
-    UniffiCallbackInterfaceWorkloadCallbackMethod0 _Nonnull serverId;
-    UniffiCallbackInterfaceWorkloadCallbackMethod1 _Nonnull onRequest;
-} UniffiVTableCallbackInterfaceWorkloadCallback;
+    UniffiCallbackInterfaceWorkloadBridgeMethod0 _Nonnull serverId;
+    UniffiCallbackInterfaceWorkloadBridgeMethod1 _Nonnull onStart;
+    UniffiCallbackInterfaceWorkloadBridgeMethod2 _Nonnull onStop;
+} UniffiVTableCallbackInterfaceWorkloadBridge;
 
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_CLONE_ACTRNODEWRAPPER
@@ -310,6 +317,11 @@ uint64_t uniffi_actr_fn_method_actrrefwrapper_discover(uint64_t ptr, RustBuffer 
 int8_t uniffi_actr_fn_method_actrrefwrapper_is_shutting_down(uint64_t ptr, RustCallStatus *_Nonnull out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
+uint64_t uniffi_actr_fn_method_actrrefwrapper_send_data_stream(uint64_t ptr, RustBuffer target, RustBuffer data_stream
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SHUTDOWN
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SHUTDOWN
 void uniffi_actr_fn_method_actrrefwrapper_shutdown(uint64_t ptr, RustCallStatus *_Nonnull out_status
@@ -340,6 +352,36 @@ uint64_t uniffi_actr_fn_constructor_actrsystemwrapper_new_from_file(RustBuffer c
 uint64_t uniffi_actr_fn_method_actrsystemwrapper_attach(uint64_t ptr, uint64_t callback, RustCallStatus *_Nonnull out_status
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_CLONE_CONTEXTBRIDGE
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_CLONE_CONTEXTBRIDGE
+uint64_t uniffi_actr_fn_clone_contextbridge(uint64_t handle, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_FREE_CONTEXTBRIDGE
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_FREE_CONTEXTBRIDGE
+void uniffi_actr_fn_free_contextbridge(uint64_t handle, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_CALL_RAW
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_CALL_RAW
+uint64_t uniffi_actr_fn_method_contextbridge_call_raw(uint64_t ptr, RustBuffer target, RustBuffer route_key, RustBuffer payload
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_DISCOVER
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_DISCOVER
+uint64_t uniffi_actr_fn_method_contextbridge_discover(uint64_t ptr, RustBuffer target_type
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_SEND_DATA_STREAM_RAW
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_SEND_DATA_STREAM_RAW
+uint64_t uniffi_actr_fn_method_contextbridge_send_data_stream_raw(uint64_t ptr, RustBuffer target, RustBuffer chunk
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_TELL_RAW
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_TELL_RAW
+uint64_t uniffi_actr_fn_method_contextbridge_tell_raw(uint64_t ptr, RustBuffer target, RustBuffer _route_key, RustBuffer _payload
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_CLONE_DYNAMICWORKLOAD
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_CLONE_DYNAMICWORKLOAD
 uint64_t uniffi_actr_fn_clone_dynamicworkload(uint64_t handle, RustCallStatus *_Nonnull out_status
@@ -350,9 +392,9 @@ uint64_t uniffi_actr_fn_clone_dynamicworkload(uint64_t handle, RustCallStatus *_
 void uniffi_actr_fn_free_dynamicworkload(uint64_t handle, RustCallStatus *_Nonnull out_status
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_INIT_CALLBACK_VTABLE_WORKLOADCALLBACK
-#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_INIT_CALLBACK_VTABLE_WORKLOADCALLBACK
-void uniffi_actr_fn_init_callback_vtable_workloadcallback(const UniffiVTableCallbackInterfaceWorkloadCallback* _Nonnull vtable
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_INIT_CALLBACK_VTABLE_WORKLOADBRIDGE
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_INIT_CALLBACK_VTABLE_WORKLOADBRIDGE
+void uniffi_actr_fn_init_callback_vtable_workloadbridge(const UniffiVTableCallbackInterfaceWorkloadBridge* _Nonnull vtable
 );
 #endif
 #ifndef UNIFFI_FFIDEF_FFI_ACTR_RUSTBUFFER_ALLOC
@@ -645,6 +687,12 @@ uint16_t uniffi_actr_checksum_method_actrrefwrapper_is_shutting_down(void
     
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
+uint16_t uniffi_actr_checksum_method_actrrefwrapper_send_data_stream(void
+    
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SHUTDOWN
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SHUTDOWN
 uint16_t uniffi_actr_checksum_method_actrrefwrapper_shutdown(void
@@ -663,21 +711,51 @@ uint16_t uniffi_actr_checksum_method_actrsystemwrapper_attach(void
     
 );
 #endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_CALL_RAW
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_CALL_RAW
+uint16_t uniffi_actr_checksum_method_contextbridge_call_raw(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_DISCOVER
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_DISCOVER
+uint16_t uniffi_actr_checksum_method_contextbridge_discover(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_SEND_DATA_STREAM_RAW
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_SEND_DATA_STREAM_RAW
+uint16_t uniffi_actr_checksum_method_contextbridge_send_data_stream_raw(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_TELL_RAW
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_CONTEXTBRIDGE_TELL_RAW
+uint16_t uniffi_actr_checksum_method_contextbridge_tell_raw(void
+    
+);
+#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_CONSTRUCTOR_ACTRSYSTEMWRAPPER_NEW_FROM_FILE
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_CONSTRUCTOR_ACTRSYSTEMWRAPPER_NEW_FROM_FILE
 uint16_t uniffi_actr_checksum_constructor_actrsystemwrapper_new_from_file(void
     
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADCALLBACK_SERVER_ID
-#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADCALLBACK_SERVER_ID
-uint16_t uniffi_actr_checksum_method_workloadcallback_server_id(void
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_SERVER_ID
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_SERVER_ID
+uint16_t uniffi_actr_checksum_method_workloadbridge_server_id(void
     
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADCALLBACK_ON_REQUEST
-#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADCALLBACK_ON_REQUEST
-uint16_t uniffi_actr_checksum_method_workloadcallback_on_request(void
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_ON_START
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_ON_START
+uint16_t uniffi_actr_checksum_method_workloadbridge_on_start(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_ON_STOP
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_ON_STOP
+uint16_t uniffi_actr_checksum_method_workloadbridge_on_stop(void
     
 );
 #endif
