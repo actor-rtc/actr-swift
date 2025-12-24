@@ -40,11 +40,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/uniffi-bindgen
-          key: ${{ runner.os }}-uniffi-cli-v0.28.1 # Explicit version for better caching
+          key: ${{ runner.os }}-uniffi-cli
 
       - name: Install UniFFI CLI
         if: steps.cache-uniffi.outputs.cache-hit != 'true'
-        run: cargo install uniffi --version 0.28.1 --features "cli" --locked
+        run: cargo install uniffi --features "cli" --locked
 
       - name: Build XCFramework
         run: ./build-xcframework.sh
