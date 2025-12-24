@@ -245,7 +245,7 @@ typedef void (*UniffiForeignFutureCompleteVoid)(uint64_t, UniffiForeignFutureRes
 #endif
 #ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD0
 #define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD0
-typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod0)(uint64_t, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
+typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod0)(uint64_t, uint64_t, UniffiForeignFutureCompleteVoid _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
     );
 
 #endif
@@ -257,13 +257,7 @@ typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod1)(uint64_t, uint64_t,
 #endif
 #ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD2
 #define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD2
-typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod2)(uint64_t, uint64_t, UniffiForeignFutureCompleteVoid _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
-    );
-
-#endif
-#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD3
-#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD3
-typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod3)(uint64_t, uint64_t, RustBuffer, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
+typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod2)(uint64_t, uint64_t, RustBuffer, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
     );
 
 #endif
@@ -272,10 +266,9 @@ typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod3)(uint64_t, uint64_t,
 typedef struct UniffiVTableCallbackInterfaceWorkloadBridge {
     UniffiCallbackInterfaceFree _Nonnull uniffiFree;
     UniffiCallbackInterfaceClone _Nonnull uniffiClone;
-    UniffiCallbackInterfaceWorkloadBridgeMethod0 _Nonnull serverId;
-    UniffiCallbackInterfaceWorkloadBridgeMethod1 _Nonnull onStart;
-    UniffiCallbackInterfaceWorkloadBridgeMethod2 _Nonnull onStop;
-    UniffiCallbackInterfaceWorkloadBridgeMethod3 _Nonnull dispatch;
+    UniffiCallbackInterfaceWorkloadBridgeMethod0 _Nonnull onStart;
+    UniffiCallbackInterfaceWorkloadBridgeMethod1 _Nonnull onStop;
+    UniffiCallbackInterfaceWorkloadBridgeMethod2 _Nonnull dispatch;
 } UniffiVTableCallbackInterfaceWorkloadBridge;
 
 #endif
@@ -745,12 +738,6 @@ uint16_t uniffi_actr_checksum_method_contextbridge_tell_raw(void
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_CONSTRUCTOR_ACTRSYSTEMWRAPPER_NEW_FROM_FILE
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_CONSTRUCTOR_ACTRSYSTEMWRAPPER_NEW_FROM_FILE
 uint16_t uniffi_actr_checksum_constructor_actrsystemwrapper_new_from_file(void
-    
-);
-#endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_SERVER_ID
-#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_SERVER_ID
-uint16_t uniffi_actr_checksum_method_workloadbridge_server_id(void
     
 );
 #endif

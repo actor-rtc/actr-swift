@@ -2123,13 +2123,6 @@ public func FfiConverterTypePayloadType_lower(_ value: PayloadType) -> RustBuffe
 public protocol WorkloadBridge: AnyObject, Sendable {
     
     /**
-     * Get the server ID for this workload
-     *
-     * This identifies the workload's actor identity.
-     */
-    func serverId() async  -> ActrId
-    
-    /**
      * Lifecycle hook called when the workload starts
      */
     func onStart(ctx: ContextBridge) async throws 
@@ -2185,46 +2178,6 @@ fileprivate struct UniffiCallbackInterfaceWorkloadBridge {
             } catch {
                 fatalError("Uniffi callback interface WorkloadBridge: handle missing in uniffiClone")
             }
-        },
-        serverId: { (
-            uniffiHandle: UInt64,
-            uniffiFutureCallback: @escaping UniffiForeignFutureCompleteRustBuffer,
-            uniffiCallbackData: UInt64,
-            uniffiOutDroppedCallback: UnsafeMutablePointer<UniffiForeignFutureDroppedCallbackStruct>
-        ) in
-            let makeCall = {
-                () async throws -> ActrId in
-                guard let uniffiObj = try? FfiConverterCallbackInterfaceWorkloadBridge.handleMap.get(handle: uniffiHandle) else {
-                    throw UniffiInternalError.unexpectedStaleHandle
-                }
-                return await uniffiObj.serverId(
-                )
-            }
-
-            let uniffiHandleSuccess = { (returnValue: ActrId) in
-                uniffiFutureCallback(
-                    uniffiCallbackData,
-                    UniffiForeignFutureResultRustBuffer(
-                        returnValue: FfiConverterTypeActrId_lower(returnValue),
-                        callStatus: RustCallStatus()
-                    )
-                )
-            }
-            let uniffiHandleError = { (statusCode, errorBuf) in
-                uniffiFutureCallback(
-                    uniffiCallbackData,
-                    UniffiForeignFutureResultRustBuffer(
-                        returnValue: RustBuffer.empty(),
-                        callStatus: RustCallStatus(code: statusCode, errorBuf: errorBuf)
-                    )
-                )
-            }
-            uniffiTraitInterfaceCallAsync(
-                makeCall: makeCall,
-                handleSuccess: uniffiHandleSuccess,
-                handleError: uniffiHandleError,
-                droppedCallback: uniffiOutDroppedCallback
-            )
         },
         onStart: { (
             uniffiHandle: UInt64,
@@ -2695,16 +2648,13 @@ private let initializationResult: InitializationResult = {
     if (uniffi_actr_checksum_constructor_actrsystemwrapper_new_from_file() != 63620) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_actr_checksum_method_workloadbridge_server_id() != 20059) {
+    if (uniffi_actr_checksum_method_workloadbridge_on_start() != 1270) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_actr_checksum_method_workloadbridge_on_start() != 23404) {
+    if (uniffi_actr_checksum_method_workloadbridge_on_stop() != 37751) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_actr_checksum_method_workloadbridge_on_stop() != 60369) {
-        return InitializationResult.apiChecksumMismatch
-    }
-    if (uniffi_actr_checksum_method_workloadbridge_dispatch() != 54683) {
+    if (uniffi_actr_checksum_method_workloadbridge_dispatch() != 59525) {
         return InitializationResult.apiChecksumMismatch
     }
 

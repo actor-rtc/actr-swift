@@ -9,7 +9,7 @@ let env = ProcessInfo.processInfo.environment
 let bindingsPath = env["ACTR_BINDINGS_PATH"] ?? "ActrBindings"
 let overrideBinaryPath = env["ACTR_BINARY_PATH"]
 
-let releaseTag = env["ACTR_BINARY_TAG"] ?? "v0.1.7"
+let releaseTag = env["ACTR_BINARY_TAG"] ?? "v0.1.8"
 let remoteBinaryURL = "https://github.com/actor-rtc/actr-swift/releases/download/\(releaseTag)/ActrFFI.xcframework.zip"
 let remoteBinaryChecksum = env["ACTR_BINARY_CHECKSUM"] ?? "7f066fb43055bfe6533c1f750ea90864ca8be45b8264475d99deb1e26c17ae98"
 
