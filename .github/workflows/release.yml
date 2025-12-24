@@ -1,9 +1,12 @@
 name: release-xcframework
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 0.1.7)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,6 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # Required to push back to main
 
       - name: Install dependencies
         run: brew install protobuf
@@ -50,30 +54,45 @@ jobs:
         run: ./build-xcframework.sh
 
       - name: Package binary
-        run: ./scripts/package-binary.sh ${{ github.ref_name }}
+        run: ./scripts/package-binary.sh v${{ inputs.version }}
 
-      - name: Update Package.swift checksum
+      - name: Update Package.swift
+        id: update_package
         run: |
           CHECKSUM=$(swift package compute-checksum dist/ActrFFI.xcframework.zip)
+          VERSION="v${{ inputs.version }}"
           echo "Computed checksum: $CHECKSUM"
+
           # Update Package.swift with the new checksum
           sed -i '' "s/let remoteBinaryChecksum = env\[\"ACTR_BINARY_CHECKSUM\"\] ?? \".*\"/let remoteBinaryChecksum = env[\"ACTR_BINARY_CHECKSUM\"] ?? \"$CHECKSUM\"/" Package.swift
-          
-          # Update Package.swift with the current tag as default
-          sed -i '' "s/let releaseTag = env\[\"ACTR_BINARY_TAG\"\] ?? \".*\"/let releaseTag = env[\"ACTR_BINARY_TAG\"] ?? \"${{ github.ref_name }}\"/" Package.swift
 
-      - name: Commit and push changes
+          # Update Package.swift with the version as default
+          sed -i '' "s/let releaseTag = env\[\"ACTR_BINARY_TAG\"\] ?? \".*\"/let releaseTag = env[\"ACTR_BINARY_TAG\"] ?? \"$VERSION\"/" Package.swift
+
+          echo "checksum=$CHECKSUM" >> $GITHUB_OUTPUT
+          echo "tag=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit, Tag and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+
+          TAG_NAME="${{ steps.update_package.outputs.tag }}"
+
           git add Package.swift
-          git commit -m "chore: update Package.swift checksum and tag for ${{ github.ref_name }} [skip ci]" || echo "No changes to commit"
+          git commit -m "chore: release $TAG_NAME [skip ci]" || echo "No changes to commit"
+
+          # Create tag on the new commit
+          git tag $TAG_NAME
+
+          # Push both commit and tag
           git push origin main
+          git push origin $TAG_NAME
 
       - name: Publish release asset
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ steps.update_package.outputs.tag }}
           files: dist/ActrFFI.xcframework.zip
           generate_release_notes: true
 
