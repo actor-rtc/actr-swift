@@ -9,9 +9,9 @@ let env = ProcessInfo.processInfo.environment
 let bindingsPath = env["ACTR_BINDINGS_PATH"] ?? "ActrBindings"
 let overrideBinaryPath = env["ACTR_BINARY_PATH"]
 
-let releaseTag = env["ACTR_BINARY_TAG"] ?? "v0.1.5"
+let releaseTag = env["ACTR_BINARY_TAG"] ?? "v0.1.7"
 let remoteBinaryURL = "https://github.com/actor-rtc/actr-swift/releases/download/\(releaseTag)/ActrFFI.xcframework.zip"
-let remoteBinaryChecksum = env["ACTR_BINARY_CHECKSUM"] ?? "f12970c0249b7a7ccd15f21d236ea8d18d6dcea92c73c6008551003525b474f5"
+let remoteBinaryChecksum = env["ACTR_BINARY_CHECKSUM"] ?? "7f066fb43055bfe6533c1f750ea90864ca8be45b8264475d99deb1e26c17ae98"
 
 let manifestDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let bundledBinaryPath = "ActrFFI.xcframework"
