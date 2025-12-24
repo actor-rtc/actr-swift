@@ -1,15 +1,6 @@
 {
-  "originHash" : "b741d54f3feb6ecef801e62eb71958972641d320d17a5798073b2a424adf66d6",
+  "originHash" : "559079805f98ed8de5de5b85a76a7b16565b38aebf21724c5ef310d292f16835",
   "pins" : [
-    {
-      "identity" : "actr-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/actor-rtc/actr-swift",
-      "state" : {
-        "revision" : "cdecaa41001b6936c06c79ee7090ade03613d0a1",
-        "version" : "0.1.2"
-      }
-    },
     {
       "identity" : "swift-protobuf",
       "kind" : "remoteSourceControl",

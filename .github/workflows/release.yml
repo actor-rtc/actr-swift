@@ -23,6 +23,11 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: libactr -> target
+
       - name: Add Apple targets
         run: |
           rustup target add \
@@ -30,8 +35,16 @@ jobs:
             aarch64-apple-ios-sim \
             aarch64-apple-darwin
 
+      - name: Cache UniFFI CLI
+        id: cache-uniffi
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/uniffi-bindgen
+          key: ${{ runner.os }}-uniffi-cli-v0.28.1 # Explicit version for better caching
+
       - name: Install UniFFI CLI
-        run: cargo install uniffi --features "cli" --locked
+        if: steps.cache-uniffi.outputs.cache-hit != 'true'
+        run: cargo install uniffi --version 0.28.1 --features "cli" --locked
 
       - name: Build XCFramework
         run: ./build-xcframework.sh
