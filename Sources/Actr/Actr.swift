@@ -13,9 +13,10 @@ public actor Actr {
 
     /// Performs a protobuf-based RPC call.
     public func call<Req: Message, Res: Message>(
-        target: ActrId,
         route: String,
-        message: Req
+        message: Req,
+        payloadType: PayloadType = Req.payloadType,
+        timeoutMs: Int64 = 30_000
     ) async throws -> Res {
         guard !route.isEmpty else {
             throw ActrError.StateError(msg: "route must not be empty")
@@ -23,9 +24,10 @@ public actor Actr {
 
         let requestData = try message.serializedData()
         let responseData = try await inner.call(
-            target: target,
             routeKey: route,
-            requestPayload: requestData
+            payloadType: payloadType,
+            requestPayload: requestData,
+            timeoutMs: timeoutMs
         )
         return try Res(serializedBytes: responseData)
     }
@@ -49,4 +51,3 @@ public actor Actr {
         self.inner = inner
     }
 }
-

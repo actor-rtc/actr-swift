@@ -261,6 +261,12 @@ typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod2)(uint64_t, uint64_t,
     );
 
 #endif
+#ifndef UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD3
+#define UNIFFI_FFIDEF_CALLBACK_INTERFACE_WORKLOAD_BRIDGE_METHOD3
+typedef void (*UniffiCallbackInterfaceWorkloadBridgeMethod3)(uint64_t, uint64_t, RustBuffer, UniffiForeignFutureCompleteRustBuffer _Nonnull, uint64_t, UniffiForeignFutureDroppedCallbackStruct* _Nonnull
+    );
+
+#endif
 #ifndef UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_WORKLOAD_BRIDGE
 #define UNIFFI_FFIDEF_V_TABLE_CALLBACK_INTERFACE_WORKLOAD_BRIDGE
 typedef struct UniffiVTableCallbackInterfaceWorkloadBridge {
@@ -269,6 +275,7 @@ typedef struct UniffiVTableCallbackInterfaceWorkloadBridge {
     UniffiCallbackInterfaceWorkloadBridgeMethod0 _Nonnull serverId;
     UniffiCallbackInterfaceWorkloadBridgeMethod1 _Nonnull onStart;
     UniffiCallbackInterfaceWorkloadBridgeMethod2 _Nonnull onStop;
+    UniffiCallbackInterfaceWorkloadBridgeMethod3 _Nonnull dispatch;
 } UniffiVTableCallbackInterfaceWorkloadBridge;
 
 #endif
@@ -304,7 +311,7 @@ RustBuffer uniffi_actr_fn_method_actrrefwrapper_actor_id(uint64_t ptr, RustCallS
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_CALL
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_CALL
-uint64_t uniffi_actr_fn_method_actrrefwrapper_call(uint64_t ptr, RustBuffer target, RustBuffer route_key, RustBuffer request_payload
+uint64_t uniffi_actr_fn_method_actrrefwrapper_call(uint64_t ptr, RustBuffer route_key, RustBuffer payload_type, RustBuffer request_payload, int64_t timeout_ms
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_DISCOVER
@@ -317,14 +324,14 @@ uint64_t uniffi_actr_fn_method_actrrefwrapper_discover(uint64_t ptr, RustBuffer 
 int8_t uniffi_actr_fn_method_actrrefwrapper_is_shutting_down(uint64_t ptr, RustCallStatus *_Nonnull out_status
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
-#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
-uint64_t uniffi_actr_fn_method_actrrefwrapper_send_data_stream(uint64_t ptr, RustBuffer target, RustBuffer data_stream
-);
-#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SHUTDOWN
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_SHUTDOWN
 void uniffi_actr_fn_method_actrrefwrapper_shutdown(uint64_t ptr, RustCallStatus *_Nonnull out_status
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_TELL
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_TELL
+uint64_t uniffi_actr_fn_method_actrrefwrapper_tell(uint64_t ptr, RustBuffer route_key, RustBuffer payload_type, RustBuffer message_payload
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_ACTRREFWRAPPER_WAIT_FOR_SHUTDOWN
@@ -364,7 +371,7 @@ void uniffi_actr_fn_free_contextbridge(uint64_t handle, RustCallStatus *_Nonnull
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_CALL_RAW
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_CALL_RAW
-uint64_t uniffi_actr_fn_method_contextbridge_call_raw(uint64_t ptr, RustBuffer target, RustBuffer route_key, RustBuffer payload
+uint64_t uniffi_actr_fn_method_contextbridge_call_raw(uint64_t ptr, RustBuffer target, RustBuffer route_key, RustBuffer payload_type, RustBuffer payload, int64_t timeout_ms
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_DISCOVER
@@ -379,7 +386,7 @@ uint64_t uniffi_actr_fn_method_contextbridge_send_data_stream_raw(uint64_t ptr, 
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_TELL_RAW
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_FN_METHOD_CONTEXTBRIDGE_TELL_RAW
-uint64_t uniffi_actr_fn_method_contextbridge_tell_raw(uint64_t ptr, RustBuffer target, RustBuffer _route_key, RustBuffer _payload
+uint64_t uniffi_actr_fn_method_contextbridge_tell_raw(uint64_t ptr, RustBuffer target, RustBuffer route_key, RustBuffer payload_type, RustBuffer payload
 );
 #endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_FN_CLONE_DYNAMICWORKLOAD
@@ -687,15 +694,15 @@ uint16_t uniffi_actr_checksum_method_actrrefwrapper_is_shutting_down(void
     
 );
 #endif
-#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
-#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SEND_DATA_STREAM
-uint16_t uniffi_actr_checksum_method_actrrefwrapper_send_data_stream(void
-    
-);
-#endif
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SHUTDOWN
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_SHUTDOWN
 uint16_t uniffi_actr_checksum_method_actrrefwrapper_shutdown(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_TELL
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_ACTRREFWRAPPER_TELL
+uint16_t uniffi_actr_checksum_method_actrrefwrapper_tell(void
     
 );
 #endif
@@ -756,6 +763,12 @@ uint16_t uniffi_actr_checksum_method_workloadbridge_on_start(void
 #ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_ON_STOP
 #define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_ON_STOP
 uint16_t uniffi_actr_checksum_method_workloadbridge_on_stop(void
+    
+);
+#endif
+#ifndef UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_DISPATCH
+#define UNIFFI_FFIDEF_UNIFFI_ACTR_CHECKSUM_METHOD_WORKLOADBRIDGE_DISPATCH
+uint16_t uniffi_actr_checksum_method_workloadbridge_dispatch(void
     
 );
 #endif

@@ -25,7 +25,7 @@ public final class ActrSystem: Sendable {
         return ActrNode(inner: nodeWrapper)
     }
 
-    internal init(inner: ActrSystemWrapper) {
+    init(inner: ActrSystemWrapper) {
         self.inner = inner
     }
 }

@@ -77,6 +77,10 @@ This generates Swift bindings and the multi-platform XCFramework at `ActrFFI.xcf
 
 UniFFI configuration lives in `libactr/uniffi.toml`.
 
+## Documentation
+
+- **[API Reference](docs/api.md)** - Comprehensive API documentation covering both Low Level and High Level APIs
+
 ## License
 
 Apache-2.0
