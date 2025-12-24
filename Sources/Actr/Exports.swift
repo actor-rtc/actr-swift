@@ -8,6 +8,7 @@ public typealias ActrType = ActrSwift.ActrType
 public typealias PayloadType = ActrSwift.PayloadType
 public typealias Realm = ActrSwift.Realm
 public typealias ContextBridge = ActrSwift.ContextBridge
+public typealias RpcEnvelopeBridge = ActrSwift.RpcEnvelopeBridge
 public typealias Workload = ActrSwift.WorkloadBridge
 public typealias DataStream = ActrSwift.DataStream
 public typealias MetadataEntry = ActrSwift.MetadataEntry

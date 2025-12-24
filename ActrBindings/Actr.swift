@@ -2541,7 +2541,6 @@ fileprivate func uniffiFutureContinuationCallback(handle: UInt64, pollResult: In
         print("uniffiFutureContinuationCallback invalid handle")
     }
 }
-
 private struct UniffiUnsafeSendable<T>: @unchecked Sendable {
     let value: T
 
@@ -2584,13 +2583,21 @@ private func uniffiTraitInterfaceCallAsyncWithError<T, E>(
     lowerError: @escaping (E) -> RustBuffer,
     droppedCallback: UnsafeMutablePointer<UniffiForeignFutureDroppedCallbackStruct>
 ) {
+    let makeCallSendable = UniffiUnsafeSendable(makeCall)
+    let handleSuccessSendable = UniffiUnsafeSendable(handleSuccess)
+    let handleErrorSendable = UniffiUnsafeSendable(handleError)
+    let lowerErrorSendable = UniffiUnsafeSendable(lowerError)
+
     let task = Task {
         do {
-            handleSuccess(try await makeCall())
+            handleSuccessSendable.value(try await makeCallSendable.value())
         } catch let error as E {
-            handleError(CALL_ERROR, lowerError(error))
+            handleErrorSendable.value(CALL_ERROR, lowerErrorSendable.value(error))
         } catch {
-            handleError(CALL_UNEXPECTED_ERROR, FfiConverterString.lower(String(describing: error)))
+            handleErrorSendable.value(
+                CALL_UNEXPECTED_ERROR,
+                FfiConverterString.lower(String(describing: error))
+            )
         }
     }
     let handle = UNIFFI_FOREIGN_FUTURE_HANDLE_MAP.insert(obj: task)

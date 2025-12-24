@@ -15,8 +15,8 @@ public actor Actr {
     public func call<Req: Message, Res: Message>(
         route: String,
         message: Req,
-        payloadType: PayloadType = Req.payloadType,
-        timeoutMs: Int64 = 30_000
+        payloadType: PayloadType = .rpcReliable,
+        timeoutMs: Int64 = 30000
     ) async throws -> Res {
         guard !route.isEmpty else {
             throw ActrError.StateError(msg: "route must not be empty")
@@ -47,7 +47,7 @@ public actor Actr {
         await inner.waitForShutdown()
     }
 
-    internal init(inner: ActrRefWrapper) {
+    init(inner: ActrRefWrapper) {
         self.inner = inner
     }
 }
