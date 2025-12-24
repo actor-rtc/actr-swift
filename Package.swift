@@ -11,7 +11,7 @@ let overrideBinaryPath = env["ACTR_BINARY_PATH"]
 
 let releaseTag = env["ACTR_BINARY_TAG"] ?? "v0.1.8"
 let remoteBinaryURL = "https://github.com/actor-rtc/actr-swift/releases/download/\(releaseTag)/ActrFFI.xcframework.zip"
-let remoteBinaryChecksum = env["ACTR_BINARY_CHECKSUM"] ?? "7f066fb43055bfe6533c1f750ea90864ca8be45b8264475d99deb1e26c17ae98"
+let remoteBinaryChecksum = env["ACTR_BINARY_CHECKSUM"] ?? "0d25c4f115e9d6b1b4f0821d3627d3bd5655b1edda4d6f815eb47da0901bc372"
 
 let manifestDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let bundledBinaryPath = "ActrFFI.xcframework"
