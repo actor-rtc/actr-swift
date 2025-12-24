@@ -52,6 +52,24 @@ jobs:
       - name: Package binary
         run: ./scripts/package-binary.sh ${{ github.ref_name }}
 
+      - name: Update Package.swift checksum
+        run: |
+          CHECKSUM=$(swift package compute-checksum dist/ActrFFI.xcframework.zip)
+          echo "Computed checksum: $CHECKSUM"
+          # Update Package.swift with the new checksum
+          sed -i '' "s/let remoteBinaryChecksum = env\[\"ACTR_BINARY_CHECKSUM\"\] ?? \".*\"/let remoteBinaryChecksum = env[\"ACTR_BINARY_CHECKSUM\"] ?? \"$CHECKSUM\"/" Package.swift
+          
+          # Update Package.swift with the current tag as default
+          sed -i '' "s/let releaseTag = env\[\"ACTR_BINARY_TAG\"\] ?? \".*\"/let releaseTag = env[\"ACTR_BINARY_TAG\"] ?? \"${{ github.ref_name }}\"/" Package.swift
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add Package.swift
+          git commit -m "chore: update Package.swift checksum and tag for ${{ github.ref_name }} [skip ci]" || echo "No changes to commit"
+          git push origin main
+
       - name: Publish release asset
         uses: softprops/action-gh-release@v1
         with:
